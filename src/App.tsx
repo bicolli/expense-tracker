@@ -1,3 +1,4 @@
+import Categories from './Categories'
 import Expenses from './Expenses'
 import { useEffect, useState } from 'react'
 import type { Session } from '@supabase/supabase-js'
@@ -7,6 +8,7 @@ function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault()
@@ -38,6 +40,7 @@ function Login() {
 function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [loading, setLoading] = useState(true)
+  const [catVersion, setCatVersion] = useState(0)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -53,12 +56,13 @@ function App() {
   if (loading) return <p>Loading...</p>
   if (!session) return <Login />
 
-    return (
+  return (
     <div>
       <h1>Expense Tracker</h1>
       <p>Logged in as {session.user.email}</p>
       <button onClick={() => supabase.auth.signOut()}>Log out</button>
-      <Expenses />
+      <Categories onChange={() => setCatVersion((v) => v + 1)} />
+      <Expenses key={catVersion} />
     </div>
   )
 }
